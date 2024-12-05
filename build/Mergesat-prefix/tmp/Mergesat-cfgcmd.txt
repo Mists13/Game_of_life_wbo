@@ -1,0 +1,1 @@
+cmd='/usr/bin/gmake;config;prefix=/home/santiago/Desktop/original-gol-sat-master/gol-sat-master/build/external'

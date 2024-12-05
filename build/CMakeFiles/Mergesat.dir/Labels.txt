@@ -1,0 +1,13 @@
+# Target labels
+ Mergesat
+# Source files and their labels
+/home/santiago/Desktop/original-gol-sat-master/gol-sat-master/build/CMakeFiles/Mergesat
+/home/santiago/Desktop/original-gol-sat-master/gol-sat-master/build/CMakeFiles/Mergesat.rule
+/home/santiago/Desktop/original-gol-sat-master/gol-sat-master/build/CMakeFiles/Mergesat-complete.rule
+/home/santiago/Desktop/original-gol-sat-master/gol-sat-master/build/Mergesat-prefix/src/Mergesat-stamp/Mergesat-build.rule
+/home/santiago/Desktop/original-gol-sat-master/gol-sat-master/build/Mergesat-prefix/src/Mergesat-stamp/Mergesat-configure.rule
+/home/santiago/Desktop/original-gol-sat-master/gol-sat-master/build/Mergesat-prefix/src/Mergesat-stamp/Mergesat-download.rule
+/home/santiago/Desktop/original-gol-sat-master/gol-sat-master/build/Mergesat-prefix/src/Mergesat-stamp/Mergesat-install.rule
+/home/santiago/Desktop/original-gol-sat-master/gol-sat-master/build/Mergesat-prefix/src/Mergesat-stamp/Mergesat-mkdir.rule
+/home/santiago/Desktop/original-gol-sat-master/gol-sat-master/build/Mergesat-prefix/src/Mergesat-stamp/Mergesat-patch.rule
+/home/santiago/Desktop/original-gol-sat-master/gol-sat-master/build/Mergesat-prefix/src/Mergesat-stamp/Mergesat-update.rule

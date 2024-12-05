@@ -1,0 +1,4 @@
+/home/santiago/Desktop/original-gol-sat-master/gol-sat-master/build/CMakeFiles/gol-sat.dir
+/home/santiago/Desktop/original-gol-sat-master/gol-sat-master/build/CMakeFiles/Mergesat.dir
+/home/santiago/Desktop/original-gol-sat-master/gol-sat-master/build/CMakeFiles/edit_cache.dir
+/home/santiago/Desktop/original-gol-sat-master/gol-sat-master/build/CMakeFiles/rebuild_cache.dir
