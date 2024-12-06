@@ -9,13 +9,13 @@ class Pattern {
 
     void load(std::istream& is);
 
-    bool isEmpty() const { return m_width == 0 || m_height == 0; }
-    int width() const { return m_width; }
-    int height() const { return m_height; }
+    bool isEmpty() const { return m_colunas == 0 || n_linhas == 0; }
+    int width() const { return m_colunas; }
+    int height() const { return n_linhas; }
     const CellState& operator()(int x, int y) const;
 
   private:
-    int m_width = 0;
-    int m_height = 0;
+    int m_colunas = 0;
+    int n_linhas = 0;
     std::vector<CellState> m_cells;
 };

@@ -31,7 +31,6 @@ int main(int argc, char** argv) {
     }
 
     std::vector<Field> fields;
-    
     fields.push_back(Field(pat.width(), pat.height()));
     //
     fields.push_back(Field(pat.width(), pat.height()));
@@ -41,26 +40,26 @@ int main(int argc, char** argv) {
     patternConstraint(fields.back(), pat);
     //
     saveAsCNF("output.cnf");
+    std::cout << "Gerado arquivo output.cnf\n";
+    // // Aguarda o arquivo de solução
+    // std::cout << "Aguardando o arquivo de solução gerado pelo resolvedor SAT.\n";
+    // std::cout << "Insira o caminho do arquivo de solução: ";
+    // std::string solutionFile;
+    // std::cin >> solutionFile;
 
-    // Aguarda o arquivo de solução
-    std::cout << "Aguardando o arquivo de solução gerado pelo resolvedor SAT.\n";
-    std::cout << "Insira o caminho do arquivo de solução: ";
-    std::string solutionFile;
-    std::cin >> solutionFile;
-
-    // Carrega a solução
-    std::vector<int> solution;
-    try {
-        solution = loadSolution(solutionFile);
-    } catch (const std::exception& e) {
-        std::cerr << e.what() << std::endl;
-        return 1;
-    }
-    std::cout << "Entrada:" << std::endl;
-    printBoard(solution, fields[1]);
-    std::cout << "Estado anterior:" << std::endl;
-    printBoard(solution, fields[0]);
-    std::cout << std::endl;
+    // // Carrega a solução
+    // std::vector<int> solution;
+    // try {
+    //     solution = loadSolution(solutionFile);
+    // } catch (const std::exception& e) {
+    //     std::cerr << e.what() << std::endl;
+    //     return 1;
+    // }
+    // std::cout << "Entrada:" << std::endl;
+    // printBoard(solution, fields[1]);
+    // std::cout << "Estado anterior:" << std::endl;
+    // printBoard(solution, fields[0]);
+    // std::cout << std::endl;
     
     return 0;
 }

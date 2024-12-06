@@ -2,12 +2,13 @@
 #include <cassert>
 
 void Pattern::load(std::istream& is) {
-    m_width = 0;
-    m_height = 0;
+    n_linhas = 0;
+    m_colunas = 0;
     m_cells.clear();
 
-    is >> m_width >> m_height;
-    if (m_width <= 0 || m_height <= 0) {
+    is >> n_linhas >> m_colunas;
+    std::cout << "path.width" << m_colunas << n_linhas <<"\n";
+    if (m_colunas <= 0 || n_linhas <= 0) {
         throw std::runtime_error(
             "Pattern parsing failed when reading WIDTH and HEIGHT.");
     }
@@ -16,7 +17,7 @@ void Pattern::load(std::istream& is) {
     char c;
     while (is.get(c)) {
         if (c == '.' || c == '0') {
-            if (size < m_width * m_height) {
+            if (size < m_colunas * n_linhas) {
                 ++size;
                 m_cells.push_back(CellState::Dead);
             } else {
@@ -24,7 +25,7 @@ void Pattern::load(std::istream& is) {
                                          "cells (too many characters).");
             }
         } else if (c == 'X' || c == '1') {
-            if (size < m_width * m_height) {
+            if (size < m_colunas * n_linhas) {
                 ++size;
                 m_cells.push_back(CellState::Alive);
             } else {
@@ -32,7 +33,7 @@ void Pattern::load(std::istream& is) {
                                          "cells (too many characters).");
             }
         } else if (c == '?') {
-            if (size < m_width * m_height) {
+            if (size < m_colunas * n_linhas) {
                 ++size;
                 m_cells.push_back(CellState::Unknown);
             } else {
@@ -42,7 +43,7 @@ void Pattern::load(std::istream& is) {
         }
     }
 
-    if (size != m_width * m_height) {
+    if (size != m_colunas * n_linhas) {
         throw std::runtime_error("Pattern parsing failed when parsing cell "
                                  "(not enough characters).");
     }
