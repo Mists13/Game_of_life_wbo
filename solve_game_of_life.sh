@@ -20,4 +20,4 @@ make clean
 make
 
 # Executar open-wbo passando arquivo .cnf gerado na etapa anterior
-./open-wbo ./output.cnf > ../wbo_solution.txt
+./open-wbo ../output.cnf > ../wbo_solution.txt
