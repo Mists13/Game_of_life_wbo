@@ -28,14 +28,14 @@ Search algorithm (0=wbo,1=linear-su,2=msu3,3=part-msu3,4=oll,5=best)
 Estado anterior obtido para uma entrada de 25x25 usando o algoritmo 5:
 flag: -algorithm=5
 
-![alt text](algorithm_5.png)
+![alt text](imgs_readme/algorithm_5.png)
 
 
 Estado anterior obtido para uma entrada de 25x25 usando o algoritmo 0:
 flag: -algorithm=0 
 
-![alt text](algorithm_0.png)
+![alt text](imgs_readme/algorithm_0.png)
 
 
 Estado anterior obtido para uma entrada de 25x25 usando o algoritmo 0 e uso de soft clauses para gerar um arquivo .wcnf
-![alt text](algorithm_0_wcnf.png)
+![alt text](imgs_readme/algorithm_0_wcnf.png)
