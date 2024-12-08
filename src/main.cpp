@@ -41,6 +41,26 @@ void writeBoardToFile(const std::vector<int>& solution, int n_rows, int m_column
     outFile.close();
 }
 
+void processSolutionFile(const std::string &solutionFile) {
+    // Wait for the file to be fully written
+    while (!std::filesystem::exists(solutionFile)) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Check every 100ms
+    }
+
+    // Check if the file size increases over time, indicating it's still being written
+    std::filesystem::path filePath(solutionFile);
+    auto fileSize = std::filesystem::file_size(filePath);
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Wait for 500ms before checking file size again
+    auto newFileSize = std::filesystem::file_size(filePath);
+
+    if (fileSize == newFileSize) {
+        std::cout << "File is fully written\n";
+    } else {
+        std::cerr << "The solution file is still being written. Please wait and try again." << std::endl;
+    }
+}
+
 int main(int argc, char** argv) {
 
     if (argc != 2) {
@@ -48,12 +68,6 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    char cwd[PATH_MAX];
-    if (getcwd(cwd, sizeof(cwd)) != nullptr) {
-        std::cout << "Current working directory: " << cwd << std::endl;
-    } else {
-        perror("getcwd error");
-    }
     // Armazena o nome do arquivo de entrada
     std::string matriz_entrada = argv[1];
 
@@ -85,16 +99,9 @@ int main(int argc, char** argv) {
 
     std::string command = "./open-wbo/open-wbo ./output.cnf > ./wbo_solution.txt";
     int result = std::system(command.c_str());
-    if (WIFEXITED(result)) {
-        int exitCode = WEXITSTATUS(result);
-        if (exitCode != 0) {
-            std::cerr << "SAT solver exited with code: " << exitCode << std::endl;
-            // return 1;
-        }
-    } else {
-        std::cerr << "SAT solver terminated abnormally!" << std::endl;
-        // return 1;
-    }
+
+    std::cout << "SAT solver executed successfully." << std::endl;
+    processSolutionFile("./wbo_solution.txt");    
     
     // Aguarda o arquivo de solução gerado pelo resolvedor SAT
     std::string solutionFile = "./wbo_solution.txt";
@@ -116,11 +123,11 @@ int main(int argc, char** argv) {
 
     std::cout << "Tabueiro resultante foi salvo em " << filename_output << "\n";
 
-    // std::cout << "Entrada:" << std::endl;
-    // printBoard(solution, fields[1]);
-    // std::cout << "Estado anterior:" << std::endl;
-    // printBoard(solution, fields[0]);
-    // std::cout << std::endl;
+    std::cout << "Entrada:" << std::endl;
+    printBoard(solution, fields[1]);
+    std::cout << "Estado anterior:" << std::endl;
+    printBoard(solution, fields[0]);
+    std::cout << std::endl;
     
     return 0;
 }
