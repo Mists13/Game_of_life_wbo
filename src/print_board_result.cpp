@@ -47,7 +47,7 @@ void writeBoardToFile(const std::vector<int>& solution, int n_rows, int m_column
     for (int y = 0; y < n_rows; ++y) {
         for (int x = 0; x < m_columns; ++x) {
             // Compute the variable index (1-based)
-            int varIndex = y * m_columns + x + 1;
+            int varIndex = y * m_columns + x + 2;
 
             // Check the state of the variable in the solution
             auto it = std::find(solution.begin(), solution.end(), varIndex);
