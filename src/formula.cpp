@@ -78,7 +78,7 @@ void rule(const Minisat::Lit& cell,
     }
 }
 
-void transition(const Field& current, const Field& next) {
+void applyGameOfLifeRules(const Field& current, const Field& next) {
 
     for (int x = -1; x <= current.width(); ++x) {
         for (int y = -1; y <= current.height(); ++y) {
@@ -120,28 +120,5 @@ void patternConstraint(const Field& field, const Pattern& pat) {
                 break;
             }
         }
-    }
-}
-
-void printBoard(const std::vector<int>& solution, const Field& field) {
-    for (int y = 0; y < field.height(); ++y) {
-        for (int x = 0; x < field.width(); ++x) {
-            // Obtem a variável associada à célula (1-based index no CNF)
-            int varIndex = Minisat::var(field(x, y)) + 1;
-
-            // Busca o valor da variável na solução
-            auto it = std::find(solution.begin(), solution.end(), varIndex);
-            if (it != solution.end()) {
-                std::cout << "x "; // Célula viva
-            } else {
-                it = std::find(solution.begin(), solution.end(), -varIndex);
-                if (it != solution.end()) {
-                    std::cout << ". "; // Célula morta
-                } else {
-                    std::cout << "? "; // Variável não encontrada
-                }
-            }
-        }
-        std::cout << "\n";
     }
 }

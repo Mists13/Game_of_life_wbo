@@ -2,7 +2,7 @@
 #include "satSolver.h"
 
 // Contador global para rastrear variáveis únicas
-static int variableCounter = 0; // Inicia em 1, pois variáveis CNF são 1-based
+static int variableCounter = 0;
 
 Field::Field(int width, int height)
     : m_colunas(width), n_linhas(height), m_literals(width * height) {
