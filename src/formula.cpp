@@ -79,41 +79,9 @@ void rule(const Minisat::Lit& cell,
 }
 
 void transition(const Field& current, const Field& next) {
-    int offset_x = 0;
-    int offset_y = 0;
-    int from_x, to_x, from_y, to_y;
 
-    if ((current.width() == next.width()) &&
-        (current.height() == next.height())) {
-        // same field size
-        from_x = -1;
-        to_x = current.width();
-        from_y = -1;
-        to_y = current.height();
-    } else if ((current.width() + 2 == next.width()) &&
-               (current.height() + 2 == next.height())) {
-        // field size expands
-        from_x = -2;
-        to_x = current.width() + 1;
-        from_y = -2;
-        to_y = current.height() + 1;
-        offset_x = 1;
-        offset_y = 1;
-    } else if ((current.width() == next.width() + 2) &&
-               (current.height() == next.height() + 2)) {
-        // field size shrinks
-        from_x = -1;
-        to_x = current.width();
-        from_y = -1;
-        to_y = current.height();
-        offset_x = -1;
-        offset_y = -1;
-    } else {
-        assert(false && "incompatible field sizes");
-    }
-
-    for (int x = from_x; x <= to_x; ++x) {
-        for (int y = from_y; y <= to_y; ++y) {
+    for (int x = -1; x <= current.width(); ++x) {
+        for (int y = -1; y <= current.height(); ++y) {
             std::vector<Minisat::Lit> neighbours;
             for (int dx = -1; dx <= +1; ++dx) {
                 for (int dy = -1; dy <= +1; ++dy) {
@@ -123,7 +91,7 @@ void transition(const Field& current, const Field& next) {
                 }
             }
 
-            rule(current(x, y), neighbours, next(x + offset_x, y + offset_y));
+            rule(current(x, y), neighbours, next(x, y));
         }
     }
 }
