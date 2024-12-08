@@ -36,3 +36,6 @@ flag: -algorithm=0
 
 ![alt text](algorithm_0.png)
 
+
+Estado anterior obtido para uma entrada de 25x25 usando o algoritmo 0 e uso de soft clauses para gerar um arquivo .wcnf
+![alt text](algorithm_0_wcnf.png)

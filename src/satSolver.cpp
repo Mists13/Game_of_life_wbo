@@ -39,9 +39,15 @@ void saveAsCNF(const std::string& filename) {
         }
     }
 
-    cnfFile << "p cnf " << maxVariable << " " << globalClauses.size() << "\n";
+    cnfFile << "p wcnf " << maxVariable << " " << globalClauses.size() << " 1000\n";
 
     for (const auto& clause : globalClauses) {
+        const auto& primeiro_termo_clausula = (*clause)[0];
+        if (Minisat::var(primeiro_termo_clausula) < maxVariable/2 + 1){ //adiciona pesos para as clausulas (clausulas das restrições começam com variáveis maiores que maxVariable/2)
+            cnfFile << "1000 ";//peso 1000 como hard clauses para as clausulas das regras do jogo
+        }else{
+            cnfFile << "1 ";//pesos 1 como soft clauses, a fim de minimizar o número de celulas vivas
+        }
         for (int i = 0; i < clause->size(); ++i) {
             const auto& lit = (*clause)[i];
             cnfFile << (Minisat::sign(lit) ? "-" : "") << (Minisat::var(lit) + 1) << " ";
