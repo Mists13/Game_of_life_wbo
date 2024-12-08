@@ -5,7 +5,7 @@ set -e
 
 
 # Especifique o arquivo de entrada
-input_file="patterns/123.txt"
+input_file="patterns/vintecinco.txt"
 
 # Executar script para gerar arquivo cnf
 ./bin/game-of-life "$input_file"
