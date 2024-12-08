@@ -9,6 +9,27 @@
 #include <algorithm> // std::find
 #include <chrono>
 
+void printBoard(const std::vector<int>& solution, const Field& field) {
+    for (int y = 0; y < field.height(); ++y) {
+        for (int x = 0; x < field.width(); ++x) {
+            // Obtem a variável associada à célula (1-based index no CNF)
+            int varIndex = Minisat::var(field(x, y)) + 1;
+
+            // Busca o valor da variável na solução
+            auto it = std::find(solution.begin(), solution.end(), varIndex);
+            if (it != solution.end()) {
+                std::cout << "X "; // Célula viva
+            } else {
+                it = std::find(solution.begin(), solution.end(), -varIndex);
+                if (it != solution.end()) {
+                    std::cout << ". "; // Célula morta
+                }
+            }
+        }
+        std::cout << "\n";
+    }
+}
+
 void writeBoardToFile(const std::vector<int>& solution, int n_rows, int m_columns, const std::string& filename) {
     std::ofstream outFile(filename);
 
@@ -90,14 +111,14 @@ int main(int argc, char** argv) {
     fields.push_back(Field(m, n));
     fields.push_back(Field(m, n));
 
-    transition(fields[0], fields[1]);
+    applyGameOfLifeRules(fields[0], fields[1]);
     
     patternConstraint(fields.back(), board);
     
     saveAsCNF("output.cnf");
     std::cout << "Gerado arquivo output.cnf\n";
 
-    std::string command = "./open-wbo/open-wbo ./output.cnf > ./wbo_solution.txt";
+    std::string command = "./open-wbo/open-wbo -algorithm=0 ./output.cnf > ./wbo_solution.txt";
     int result = std::system(command.c_str());
 
     std::cout << "SAT solver executed successfully." << std::endl;
@@ -107,7 +128,7 @@ int main(int argc, char** argv) {
     std::string solutionFile = "./wbo_solution.txt";
     while (!std::filesystem::exists(solutionFile)) {
         // Sleep for 0.1 seconds
-        std::cout << "Aguardando";
+        std::cout << "Aguardando arquivo wbo_solution";
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
