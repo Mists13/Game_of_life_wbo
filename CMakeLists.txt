@@ -10,10 +10,10 @@ set(CMAKE_CXX_FLAGS "-Wall -Wextra -std=c++11 -O2")
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 add_executable(game-of-life
-  src/field.cpp
+  src/futureState.cpp
   src/formula.cpp
   src/main.cpp
-  src/pattern.cpp
+  src/initialState.cpp
   src/satSolver.cpp
 )
 

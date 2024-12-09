@@ -1,0 +1,161 @@
+GAME OF LIFE - OPEN-WBO
+GRR20185174 - Luzia Millena Santos Silva
+GRR20171902 - Bruno Oshiro Vieira
+--------------------------------------------------------------------------------
+
+### COMPILAÇÃO ###
+
+1.Compilar codigo principal (game of life):
+
+make
+
+2.Compilar open-wbo:
+
+make -C ./open-wbo
+
+
+### EXECUÇÃO ###
+
+Para gerar um estado anterior ao tabuleiro dado como entrada, primeiro adicione na pasta "entradas" um arquivo que contenha a entrada do programa.
+O nome do arquivo deve ser inserido no campo "input_file" no script solve_game_of_life.sh
+Após isso, basta executar o script a seguir:
+
+sh solve_game_of_life.sh
+
+Este script será responsavel por criar um arquivo 'output.cnf' com a modelagem do problema e rodar o open-wbo para gerar uma solução do problema.
+A solução do problema de encontrarmos um estado anterior de uma dada configuração do jogo será exibida em tela, e salva em um arquivo 'previous_state_output.txt'
+
+
+### MINIMIZAÇÃO DE CÉLULAS VIVAS ### 
+
+A escolha do Open-WBO se deve por ele ser um MaxSAT. 
+Para o problema de definir o estado anterior de um dado tabuleiro do Jogo da Vida com o número mínimo de celulas possíveis, achamos interessante a estratégia de resolução de um problema SAT usando pesos, pois ela expande o modelo clássico de SAT para incluir cláusulas com pesos. Isso é utilizado em problemas MaxSAT, onde o objetivo é satisfazer o maior número de cláusulas possíveis, levando em consideração seus pesos. 
+
+Hard Clauses têm um peso extremamente alto e devem ser satisfeitas para que a solução seja válida. Soft Clauses têm pesos mais baixos e representam restrições que podem ser violadas, e o resolvedor tenta minimizar a soma dos pesos delas. O objetivo do open-wbo então é encontrar uma atribuição de variáveis que satisfaça todas as Hard Clauses e maximize a soma dos pesos das Soft Clauses satisfeitas.
+
+Definimos como as Hard Clauses do nosso problema todas as clausulas que aplicavam as regras do jogo, visto que necessáriamente precisamos de um estádo anterior válido. As Soft Clauses foram todas as celulas do estado anterior mortas, que é o nosso cenário ideal, mas praticamente impossível visto que as Hard Clauses precisam ser necessariamente ser atendidas.   
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Além disso, o open-wbo possui diversas outras opções de configurações, e uma delas permite definir o algoritmo de busca:
+
+Search algorithm (0=wbo,1=linear-su,2=msu3,3=part-msu3,4=oll,5=best)
+
+Realizando vários testes, o que mais atendeu nosso objetivo de diminuir ao máximo o número de celuas vivas do estado anterior foi o algoritimo 0=wbo
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Apesar de todas essas tecnicas e pesquisas sobre como solucionar o problema,  para diversos tabuleiros pudemos observar que não conseguimos obter o melhor caso do 
+menor número possível de celuas vivas. Um exemplo bem curioso foi o abaixo:
+
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . x x . . 
+. . . . . . . . . . . . . . . . . . . . . . x x . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . x x . . . . . . . . . . . . . . . . . . . 
+. . . . . x x . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . x x . . . . . . . . . . . . . . 
+. . . . . . . . . . x x . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . x x . . . . . . . . . . . . . . . . . . . . 
+. . . . x x . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . x x . . . . . 
+. . . . . . . . . . . . . . . . . . . x x . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . .
+
+O estado anterior com o menor número de celuas possíves seria:
+
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . x x . . 
+. . . . . . . . . . . . . . . . . . . . . . x . . 
+. . . . . . . . . . . . . . . . . . . . . . X . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . x x . . . . . . . . . . . . . . . . . . . 
+. . . . . x . . . . . . . . . . . . . . . . . . . 
+. . . . . X . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . x x . . . . . . . . . . . . . . 
+. . . . . . . . . . x . . . . . . . . . . . . . . 
+. . . . . . . . . . X . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . x x . . . . . . . . . . . . . . . . . . . . 
+. . . . x . . . . . . . . . . . . . . . . . . . . 
+. . . . X . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . x x . . . . . 
+. . . . . . . . . . . . . . . . . . . x . . . . . 
+. . . . . . . . . . . . . . . . . . . X . . . . .
+
+Mas utilizando o algoritmo WBO e pesos, o nosso resultado obtido foi:
+
+. . . . . . . . . . . . . . . . . . . . x . . . . 
+. . . x . . . . . . . . . . . . . . . . . . . . . 
+. . . . x . . . . . . . . . . . . . . . . x x x . 
+. . . x x x x . x . . . . . . . . . . . . . . . x 
+. . . x x . . . . . . . . . . . . . . . x . x . . 
+. . . . x x x x . . . . . . . . . . . . . . . . . 
+. . . x . . x x x x . . . . . . . x . . . . . . . 
+. . . . . x x x . . . . . . . . . . x . x . . . . 
+. . . . x . . . . . . . . . . . . x x x . . . . . 
+. . . . . . . . . . . . . . . . . x x . . . . . . 
+. . . . . . . . . . . . . . . . . . x . . . . . . 
+. . . . . . . . . . . . . . . . . . x x . . . . . 
+. . . . . . . . . . . . x . . . . x x x . . . . . 
+. . . . . x . . x . . . x . . . . x x . . . . . . 
+. x . x . . . . . . . x x x . . . . x . . . . . . 
+. . . . x x x x x x x x x . x . . . x x . . . . . 
+. . x x . x x x x . . . . . . . . x x x . . . . . 
+x x x x . . x . . . . . . . . . . x x . . . . . . 
+. . x . . x x x x . . . . . . . . . x . . . . . . 
+. . . x x x x . . . . . . . . . . x x . x . . . . 
+. . . . . . . . . . . . . . . x x x x . . x . . . 
+. . . . . . . . . . . . . . . . . x . . x x x x . 
+. . . . . . . . . . . . . . . . . . x x x x . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . . . . . . . . . . 
+
+Porém, sem as estratégias de otmização que encontramos (uso de pesos e o algoritmo padrão de busca), o estado anterior válido obtido foi:
+
+X . . . . . . . . . X . . . . . . X . . . . X X . 
+. . . X . . X . . . . . . . X . X . . . X . . . . 
+. X . . . . . . . . X . . . . X X X . . . . X . X 
+. . . . . . . . . . . . X X X . . X X X X X . X . 
+X . . . . . . . . . . X X X . X . X X X X X . X X 
+X . . . . . . . X . X . X . . . . X X X X . . X X 
+. . . . X . . . . X X X X X . X . X . . . . X X . 
+. . . . . X . X . X . . X X . X . X X X X X . X X 
+. X . . . X X . . X X X X X X X X . X . X X . X X 
+. X . . . . . . . X X . . . . X . . . X X . . X . 
+X X X . . . . . X X X . X X . X X X X . X X X X X 
+X X X . . . . . X X X X X X X . X X X X X X X X X 
+. X . . . X . X X . X X . X . . X X X . X X . X . 
+X X . . . X . X X X X X . X X . . X . . . . . . X 
+X X . X X X X . . X . X X X X X X X . . . . . . . 
+. X . . . X X . . . X . . X . X . X X . X X . X . 
+X X . . . . X . X . . X . X . X . X . X X X X . . 
+X X X . . X X . . . . X . . . . . X X X X . X X . 
+. X X . . X X X X X X X X X X X X . X . X X X . X 
+. X X X X X X X X X X . . X X X X X X X X X . . . 
+X X . . . . . . . . . . . . . . . X X . X . X . X 
+X X X . . . . X . X . X . . . X . . . X . X X X . 
+. X . X . . . . . . . . . . . . . . . X X . X . . 
+. X . . . . . X . X . X . . . . X . . X . . . X . 
+. . . X . . . X . X . X . . . . . . . . . . . . .
+
+A conclusão que obtivemos é que para um resolvedor SAT, mesmo o Open-WBO que possui uma estratégia muito interessante para ajudar no nosso objetivo, há uma limitação para chegar ao caso do menor número de celuas vivas possíveis. Talvez exista alguma modelagem melhor do problema para que seja possivel melhores resultados com o SAT, porém acreditamos que para chegar a essa modelagem necessitariamos mais tempo devido a alta complexidade. 

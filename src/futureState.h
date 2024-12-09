@@ -4,9 +4,9 @@
 #include <iostream>
 #include <vector>
 
-class Field {
+class FutureState {
   public:
-    Field(int width, int height);
+    FutureState(int width, int height);
 
     int width() const { return m_colunas; }
     int height() const { return n_linhas; }

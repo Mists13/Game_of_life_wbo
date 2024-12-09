@@ -3,9 +3,9 @@
 #include <iostream>
 #include <vector>
 
-class Pattern {
+class InitialState {
   public:
-    enum class CellState { Alive, Dead, Unknown };
+    enum class CellState { Alive, Dead };
 
     void load(std::istream& is);
 

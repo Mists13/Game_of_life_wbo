@@ -1,6 +1,6 @@
-#include "field.h"
+#include "futureState.h"
 #include "formula.h"
-#include "pattern.h"
+#include "initialState.h"
 #include "satSolver.h"
 #include <fstream>
 #include <iostream>
@@ -8,12 +8,30 @@
 #include <thread>
 #include <algorithm> // std::find
 #include <chrono>
+#include <cstdio>  // For std::remove
 
-void printBoard(const std::vector<int>& solution, const Field& field) {
-    for (int y = 0; y < field.height(); ++y) {
-        for (int x = 0; x < field.width(); ++x) {
+
+void remove_tmp_files(){
+
+    // Remover arquivos temporarios
+    if (std::remove("./wbo_solution.txt") == 0) {
+        std::cout << "wbo_solution.txt removed successfully.\n";
+    } else {
+        std::cerr << "Error removing wbo_solution.txt\n";
+    }
+
+    if (std::remove("./output.wcnf") == 0) {
+        std::cout << "output.cnf removed successfully.\n";
+    } else {
+        std::cerr << "Error removing output.cnf\n";
+    }
+}
+
+void printBoard(const std::vector<int>& solution, const FutureState& futureState) {
+    for (int y = 0; y < futureState.height(); ++y) {
+        for (int x = 0; x < futureState.width(); ++x) {
             // Obtem a variável associada à célula (1-based index no CNF)
-            int varIndex = Minisat::var(field(x, y)) + 1;
+            int varIndex = Minisat::var(futureState(x, y)) + 1;
 
             // Busca o valor da variável na solução
             auto it = std::find(solution.begin(), solution.end(), varIndex);
@@ -47,11 +65,11 @@ void writeBoardToFile(const std::vector<int>& solution, int n_rows, int m_column
             // Verifica o estado da variavel na solucao
             auto it = std::find(solution.begin(), solution.end(), varIndex);
             if (it != solution.end()) {
-                outFile << "x "; // Celula esta viva
+                outFile << "1 "; // Celula esta viva
             } else {
                 it = std::find(solution.begin(), solution.end(), -varIndex);
                 if (it != solution.end()) {
-                    outFile << ". "; // Celula esta morta
+                    outFile << "0 "; // Celula esta morta
                 }
             }
         }
@@ -62,30 +80,31 @@ void writeBoardToFile(const std::vector<int>& solution, int n_rows, int m_column
     outFile.close();
 }
 
-void processSolutionFile(const std::string &solutionFile) {
-    // Wait for the file to be fully written
+void awaitFileWrite(const std::string &solutionFile) {
+    // Aguarda o arquivo ser completamente escrito
     while (!std::filesystem::exists(solutionFile)) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Check every 100ms
+        std::this_thread::sleep_for(std::chrono::milliseconds(100)); // Verifica a cada 100ms
     }
 
-    // Check if the file size increases over time, indicating it's still being written
-    std::filesystem::path filePath(solutionFile);
-    auto fileSize = std::filesystem::file_size(filePath);
+    // Verifica se o arquivo aumenta conforme o tempo,
+    // indicando que ainda esta sendo escrito
+    // std::filesystem::path filePath(solutionFile);
+    // auto fileSize = std::filesystem::file_size(filePath);
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Wait for 500ms before checking file size again
-    auto newFileSize = std::filesystem::file_size(filePath);
+    // std::this_thread::sleep_for(std::chrono::milliseconds(500)); // Wait for 500ms before checking file size again
+    // auto newFileSize = std::filesystem::file_size(filePath);
 
-    if (fileSize == newFileSize) {
-        std::cout << "File is fully written\n";
-    } else {
-        std::cerr << "The solution file is still being written. Please wait and try again." << std::endl;
-    }
+    // if (fileSize == newFileSize) {
+    //     std::cout << "File is fully written\n";
+    // } else {
+    //     std::cerr << "The solution file is still being written. Please wait and try again." << std::endl;
+    // }
 }
 
 int main(int argc, char** argv) {
 
     if (argc != 2) {
-        std::cerr << "Usage: " << argv[0] << " PATTERN_FILE\n";
+        std::cerr << "Uso: " << argv[0] << " Tabuleiro de entrada\n";
         return 1;
     }
 
@@ -93,7 +112,7 @@ int main(int argc, char** argv) {
     std::string matriz_entrada = argv[1];
 
     // Cria uma instância de tabuleiro
-    Pattern board;
+    InitialState initial_state;
 
     std::ifstream f(matriz_entrada);
     if (!f) {
@@ -101,36 +120,36 @@ int main(int argc, char** argv) {
         return 1;
     }
     
-    board.load(f);
+    initial_state.load(f);
     
-    std::vector<Field> fields;
+    std::vector<FutureState> states_grid;
 
-    int n = board.height();
-    int m = board.width();
+    int n = initial_state.height();
+    int m = initial_state.width();
 
-    fields.push_back(Field(m, n));
-    fields.push_back(Field(m, n));
+    states_grid.push_back(FutureState(m, n));
+    states_grid.push_back(FutureState(m, n));
 
-    applyGameOfLifeRules(fields[0], fields[1]);
-    
-    patternConstraint(fields.back(), board);
-    
-    saveAsCNF("output.cnf");
-    std::cout << "Gerado arquivo output.cnf\n";
+    auto start = std::chrono::high_resolution_clock::now();  // Start time
 
-    std::string command = "./open-wbo/open-wbo -algorithm=0 ./output.cnf > ./wbo_solution.txt";
+    applyGameOfLifeRules(states_grid[0], states_grid[1]);
+    applyStateConstraints(states_grid.back(), initial_state);
+    saveAsWCNF("output.wcnf");
+
+    // Executa open-wbo com o arquivo .wcnf gerado para obter solucao
+    std::string command = "./open-wbo/open-wbo -algorithm=0 ./output.wcnf > ./wbo_solution.txt";
     int result = std::system(command.c_str());
 
-    std::cout << "SAT solver executed successfully." << std::endl;
-    processSolutionFile("./wbo_solution.txt");    
-    
+    std::cout << "Open wbo executou com sucesso." << std::endl;
+
     // Aguarda o arquivo de solução gerado pelo resolvedor SAT
     std::string solutionFile = "./wbo_solution.txt";
-    while (!std::filesystem::exists(solutionFile)) {
-        // Sleep for 0.1 seconds
-        std::cout << "Aguardando arquivo wbo_solution";
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
+    awaitFileWrite(solutionFile);    
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto total_duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    
+    std::cout << "Tempo total de execução da busca pela solução: " << total_duration.count() << " ms\n";
 
     std::cout << "Arquivo de solucao " << solutionFile << " foi criado!" << std::endl;
 
@@ -145,10 +164,11 @@ int main(int argc, char** argv) {
     std::cout << "Tabueiro resultante foi salvo em " << filename_output << "\n";
 
     std::cout << "Entrada:" << std::endl;
-    printBoard(solution, fields[1]);
+    printBoard(solution, states_grid[1]);
     std::cout << "Estado anterior:" << std::endl;
-    printBoard(solution, fields[0]);
+    printBoard(solution, states_grid[0]);
     std::cout << std::endl;
     
+    remove_tmp_files();
     return 0;
 }

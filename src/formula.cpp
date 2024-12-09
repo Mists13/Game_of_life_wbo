@@ -1,17 +1,17 @@
 #include "formula.h"
-#include "field.h"
-#include "pattern.h"
+#include "futureState.h"
+#include "initialState.h"
 #include "satSolver.h"
 #include <set>
 #include <vector>
 #include <algorithm> // Para std::find
 
 
-void rule(const Minisat::Lit& cell,
+void applyRules(const Minisat::Lit& cell,
           const std::vector<Minisat::Lit>& n, const Minisat::Lit& next) {
     assert(n.size() == 8);
 
-    // Under population (<=1 alive neighbor -> cell dies)
+    // Loneliness (1 vizinho vivo ou menos -> celula morre)
     for (std::size_t possiblyalive = 0; possiblyalive < n.size();
          ++possiblyalive) {
         std::vector<Minisat::Lit> cond;
@@ -23,7 +23,7 @@ void rule(const Minisat::Lit& cell,
         addImpl(cond, ~next);
     }
 
-    // status quo (=2 alive neighbours -> cell stays dead/alive)
+    // Stagnation/preservation (2 vizinhos vivos -> celula continua viva ou morta)
     for (std::size_t alive1 = 0; alive1 < n.size(); ++alive1) {
         for (std::size_t alive2 = alive1 + 1; alive2 < n.size(); ++alive2) {
             std::vector<Minisat::Lit> cond;
@@ -43,7 +43,7 @@ void rule(const Minisat::Lit& cell,
         }
     }
 
-    // Birth (= 3 alive neighbors -> cell is alive)
+    // Life (3 vizinhos vivos-> celula nasce)
     for (std::size_t alive1 = 0; alive1 < n.size(); ++alive1) {
         for (std::size_t alive2 = alive1 + 1; alive2 < n.size(); ++alive2) {
             for (std::size_t alive3 = alive2 + 1; alive3 < n.size(); ++alive3) {
@@ -60,7 +60,7 @@ void rule(const Minisat::Lit& cell,
         }
     }
 
-    // Over population (>= 4 alive neighbors -> cell dies)
+    // Overcrowding (Mais de 4 vizinhos vivos -> celula morre)
     for (std::size_t alive1 = 0; alive1 < n.size(); ++alive1) {
         for (std::size_t alive2 = alive1 + 1; alive2 < n.size(); ++alive2) {
             for (std::size_t alive3 = alive2 + 1; alive3 < n.size(); ++alive3) {
@@ -78,7 +78,7 @@ void rule(const Minisat::Lit& cell,
     }
 }
 
-void applyGameOfLifeRules(const Field& current, const Field& next) {
+void applyGameOfLifeRules(const FutureState& current, const FutureState& next) {
 
     for (int x = -1; x <= current.width(); ++x) {
         for (int y = -1; y <= current.height(); ++y) {
@@ -91,33 +91,31 @@ void applyGameOfLifeRules(const Field& current, const Field& next) {
                 }
             }
 
-            rule(current(x, y), neighbours, next(x, y));
+            applyRules(current(x, y), neighbours, next(x, y));
         }
     }
 }
 
-void patternConstraint(const Field& field, const Pattern& pat) {
-    assert(field.width() == pat.width());
-    assert(field.height() == pat.height());
+// Adiciona restricoes ao sat solver baseado no estado inicial de cada celula
+void applyStateConstraints(const FutureState& futureState, const InitialState& pat) {
+    assert(futureState.width() == pat.width());
+    assert(futureState.height() == pat.height());
 
-    for (int x = 0; x < field.width(); ++x) {
-        for (int y = 0; y < field.height(); ++y) {
+    for (int x = 0; x < futureState.width(); ++x) {
+        for (int y = 0; y < futureState.height(); ++y) {
             switch (pat(x, y)) {
-            case Pattern::CellState::Alive: {
-                // Cria um vetor com o literal field(x, y)
-                std::vector<Minisat::Lit> clause = {field(x, y)};
-                addClause(clause);
-                break;
-            }
-            case Pattern::CellState::Dead: {
-                // Cria um vetor com o literal ~field(x, y)
-                std::vector<Minisat::Lit> clause = {~field(x, y)};
-                addClause(clause);
-                break;
-            }
-            case Pattern::CellState::Unknown:
-                // Nenhuma restrição
-                break;
+                case InitialState::CellState::Alive: {
+                    // Cria um vetor com o literal futureState(x, y)
+                    std::vector<Minisat::Lit> clause = {futureState(x, y)};
+                    addClause(clause);
+                    break;
+                }
+                case InitialState::CellState::Dead: {
+                    // Cria um vetor com o literal ~futureState(x, y)
+                    std::vector<Minisat::Lit> clause = {~futureState(x, y)};
+                    addClause(clause);
+                    break;
+                }
             }
         }
     }

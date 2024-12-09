@@ -1,4 +1,4 @@
-
+#include <iostream>
 #include "satSolver.h"
 
 // Variável global para armazenar cláusulas
@@ -21,7 +21,7 @@ void addImpl(const std::vector<Minisat::Lit>& c, const Minisat::Lit& implied) {
     globalClauses.push_back(std::move(clause));
 }
 
-void saveAsCNF(const std::string& filename) {
+void saveAsWCNF(const std::string& filename) {
     std::ofstream cnfFile(filename);
 
     if (!cnfFile.is_open()) {
@@ -56,6 +56,8 @@ void saveAsCNF(const std::string& filename) {
     }
 
     cnfFile.close();
+    std::cout << "Gerado arquivo output.wcnf\n";
+
 }
 
 // Função para carregar a solução do arquivo

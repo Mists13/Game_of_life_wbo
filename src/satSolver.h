@@ -14,6 +14,6 @@ typedef Minisat::vec<Minisat::Lit> Clause;
 void addClause(const std::vector<Minisat::Lit>& c);
 void addImpl(const std::vector<Minisat::Lit>& c,
              const Minisat::Lit& implied);
-void saveAsCNF(const std::string& filename);
+void saveAsWCNF(const std::string& filename);
 std::vector<int> loadSolution(const std::string& filename);
 

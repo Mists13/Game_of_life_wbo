@@ -2,9 +2,9 @@
 
 #include "satSolver.h"
 #include <vector>
-class Field;
-class Pattern;
+class FutureState;
+class InitialState;
 
-void applyGameOfLifeRules(const Field& current, const Field& next);
-void patternConstraint(const Field& field, const Pattern& pat);
-void printBoard(const std::vector<int>& solution, const Field& field);
+void applyGameOfLifeRules(const FutureState& current, const FutureState& next);
+void applyStateConstraints(const FutureState& futureState, const InitialState& pat);
+void printBoard(const std::vector<int>& solution, const FutureState& futureState);
