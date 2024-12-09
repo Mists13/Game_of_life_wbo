@@ -36,11 +36,11 @@ void printBoard(const std::vector<int>& solution, const FutureState& futureState
             // Busca o valor da variável na solução
             auto it = std::find(solution.begin(), solution.end(), varIndex);
             if (it != solution.end()) {
-                std::cout << "X "; // Célula viva
+                std::cout << "1 "; // Célula viva
             } else {
                 it = std::find(solution.begin(), solution.end(), -varIndex);
                 if (it != solution.end()) {
-                    std::cout << ". "; // Célula morta
+                    std::cout << "0 "; // Célula morta
                 }
             }
         }

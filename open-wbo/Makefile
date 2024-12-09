@@ -8,13 +8,13 @@ SOLVER     ?= glucose4.1
 # SOLVERDIR  = subdirectory of the SAT solver
 # NSPACE     = namespace of the SAT solver
 #
-include $(PWD)/solvers/$(SOLVER).mk
+include $(CURDIR)/solvers/$(SOLVER).mk
 
 # THE REMAINING OF THE MAKEFILE SHOULD BE LEFT UNCHANGED
 EXEC       = open-wbo
 DEPDIR     += mtl utils core
 DEPDIR     +=  ../../encodings ../../algorithms ../../graph ../../classifier
-MROOT      ?= $(PWD)/solvers/$(SOLVERDIR)
+MROOT      ?= $(CURDIR)/solvers/$(SOLVERDIR)
 LFLAGS     += -lgmpxx -lgmp
 CFLAGS     += -Wall -Wno-parentheses -std=c++11 -DNSPACE=$(NSPACE) -DSOLVERNAME=$(SOLVERNAME) -DVERSION=$(VERSION)
 ifeq ($(SANITIZER),asan)
@@ -40,7 +40,7 @@ endif
 # Some solvers do not have a template.mk file any more
 # E.g.: Minisat or Riss
 ifeq ($(SOLVERDIR),$(filter $(SOLVERDIR),minisat riss))
-include $(PWD)/mtl/template.mk
+include $(CURDIR)/mtl/template.mk
 else
 include $(MROOT)/mtl/template.mk
 endif

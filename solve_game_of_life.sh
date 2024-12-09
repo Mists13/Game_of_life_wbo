@@ -5,11 +5,7 @@ set -e
 
 
 # Especifique o arquivo de entrada
-input_file="entradas/vintecinco.txt"
+input_file="entradas/teste_fabibi.txt"
 
 # Executar script para gerar arquivo cnf
 ./bin/game-of-life "$input_file"
-
-# echo "teste"
-# # Executar open-wbo passando arquivo .cnf gerado na etapa anterior
-# ./open-wbo/open-wbo ./output.cnf > ./wbo_solution.txt
